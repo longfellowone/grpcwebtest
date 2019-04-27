@@ -1,29 +1,36 @@
-import React, { useEffect, useState, useRef, useReducer } from 'react';
-import { GreeterPromiseClient } from './helloworld_grpc_web_pb';
+import React, { useState, useContext } from 'react';
+
+import { useGrpcRequest } from './useGrpcHook';
 import { HelloRequest } from './helloworld_pb';
-
-const client = new GreeterPromiseClient('http://localhost:8080');
-
-const newHelloRequest = async ({ name }) => {
-  console.log('started');
-  const request = new HelloRequest();
-  request.setName(name);
-
-  const response = await client.sayHello(request, {});
-  return response.getMessage();
-};
+import { ClientContext } from './index';
 
 const App = () => {
-  const [input, setInput] = useState('world');
-  const [data, refetch] = useGrpcRequest(newHelloRequest, { name: 'init' }, []);
+  const [input, setInput] = useState('world!!!!!!!!!!');
+  const client = useContext(ClientContext); // Pull client from context
 
-  const handleClick = () => {
-    refetch({ name: input });
+  const newHelloRequest = async ({ name }) => {
+    const request = new HelloRequest();
+    request.setName(name);
+
+    return await client.sayHello(request, {});
   };
+
+  const [data, error, loading, refetch] = useGrpcRequest(newHelloRequest, { name: 'world' }, []);
+
+  const handleClick = () => refetch({ name: input });
+
+  if (error) {
+    return (
+      <div>
+        {loading ? <div>Retrying...</div> : <div>Error: {error.message}</div>}
+        <button onClick={handleClick}>Retry</button>
+      </div>
+    );
+  }
 
   return (
     <div>
-      <div>{data}</div>
+      <div>{loading ? <div>loading...</div> : data.message}</div>
       <input value={input} onChange={e => setInput(e.target.value)} />
       <button onClick={handleClick}>New Request</button>
     </div>
@@ -31,64 +38,3 @@ const App = () => {
 };
 
 export default App;
-
-const useGrpcRequest = (request, variables, initialData) => {
-  const [state, dispatch] = useReducer(requestReducer, {
-    isLoading: false,
-    isError: false,
-    data: initialData,
-  });
-  const mounted = useRef(true);
-
-  const makeRequest = async newVariables => {
-    dispatch({ type: 'REQUEST_START' });
-
-    const params = {
-      ...variables,
-      ...newVariables,
-    };
-
-    try {
-      const response = await request(params);
-      if (!mounted.current) return;
-      dispatch({ type: 'REQUEST_SUCCESS', payload: response });
-    } catch (error) {
-      console.log('error: ', error);
-      if (!mounted.current) return;
-      dispatch({ type: 'REQUEST_ERROR' });
-    }
-  };
-
-  useEffect(() => {
-    makeRequest();
-    return () => (mounted.current = false);
-  }, []);
-
-  return [state.data, makeRequest];
-};
-
-const requestReducer = (state, action) => {
-  switch (action.type) {
-    case 'REQUEST_START':
-      return {
-        ...state,
-        isLoading: true,
-        isError: false,
-      };
-    case 'REQUEST_SUCCESS':
-      return {
-        ...state,
-        isLoading: false,
-        isError: false,
-        data: action.payload,
-      };
-    case 'REQUEST_ERROR':
-      return {
-        ...state,
-        isLoading: false,
-        isError: true,
-      };
-    default:
-      throw new Error();
-  }
-};

@@ -1,10 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import App from './App';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+import { GreeterPromiseClient } from './helloworld_grpc_web_pb';
 
-if (module.hot) {
-  module.hot.accept();
-}
+// Use the Promise client, not the standard GreeterClient
+const client = new GreeterPromiseClient('http://localhost:8080');
+
+export const ClientContext = React.createContext(); // Provide gRPC client in context
+
+ReactDOM.render(
+  <ClientContext.Provider value={client}>
+    <App />
+  </ClientContext.Provider>,
+  document.getElementById('root'),
+);
