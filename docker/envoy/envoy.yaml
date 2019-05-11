@@ -22,7 +22,7 @@ static_resources:
                       routes:
                         - match: { prefix: '/' }
                           route:
-                            cluster: todo_service
+                            cluster: echo_service
                             max_grpc_timeout: 0s
                       cors:
                         allow_origin:
@@ -37,7 +37,7 @@ static_resources:
                   - name: envoy.cors
                   - name: envoy.router
   clusters:
-    - name: todo_service
+    - name: echo_service
       connect_timeout: 0.25s
       type: logical_dns
       http2_protocol_options: {}
