@@ -5,7 +5,7 @@ import { HelloRequest } from './helloworld_pb';
 import { ClientContext } from './index';
 
 const App = () => {
-  const [input, setInput] = useState('world!!!!!!!!!!');
+  const [input, setInput] = useState('world!!!!!!!!!');
   const client = useContext(ClientContext); // Pull client from context
 
   const newHelloRequest = async ({ name }) => {
