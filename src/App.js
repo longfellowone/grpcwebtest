@@ -1,6 +1,6 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 
-import { useGrpcRequest } from './useGrpcHook';
+import { useGrpc } from './useGrpcHook';
 import { HelloRequest } from './helloworld_pb';
 import { ClientContext } from './index';
 
@@ -12,12 +12,25 @@ const App = () => {
     const request = new HelloRequest();
     request.setName(name);
 
+    // const call = client.sayHello(request, {}, () => {});
+    // call.on('data', data => console.log(data.toObject()));
+
     return await client.sayHello(request, {});
   };
 
-  const [data, error, loading, refetch] = useGrpcRequest(newHelloRequest, { name: 'world' }, []);
+  const [data, error, loading, makeRequest] = useGrpc(null);
 
-  const handleClick = () => refetch({ name: input });
+  const fetchDates = () => makeRequest(newHelloRequest, { name: 'World!' });
+
+  useEffect(() => {
+    fetchDates();
+  }, []);
+
+  const handleClick = () =>
+    makeRequest(newHelloRequest, { name: input }, data => {
+      data.message = 'Hello ' + input;
+      return data;
+    });
 
   if (error) {
     return (
