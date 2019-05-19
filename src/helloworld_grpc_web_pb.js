@@ -6,8 +6,7 @@
 
 // GENERATED CODE -- DO NOT EDIT!
 
-
-
+// @ts-ignore
 const grpc = {};
 grpc.web = require('grpc-web');
 
@@ -22,8 +21,7 @@ proto.helloworld = require('./helloworld_pb.js');
  * @struct
  * @final
  */
-proto.helloworld.GreeterClient =
-    function(hostname, credentials, options) {
+proto.helloworld.GreeterClient = function(hostname, credentials, options) {
   if (!options) options = {};
   options['format'] = 'text';
 
@@ -48,7 +46,6 @@ proto.helloworld.GreeterClient =
    */
   this.options_ = options;
 };
-
 
 /**
  * @param {string} hostname
@@ -58,8 +55,7 @@ proto.helloworld.GreeterClient =
  * @struct
  * @final
  */
-proto.helloworld.GreeterPromiseClient =
-    function(hostname, credentials, options) {
+proto.helloworld.GreeterPromiseClient = function(hostname, credentials, options) {
   if (!options) options = {};
   options['format'] = 'text';
 
@@ -84,7 +80,6 @@ proto.helloworld.GreeterPromiseClient =
    */
   this.options_ = options;
 };
-
 
 /**
  * @const
@@ -98,9 +93,8 @@ const methodInfo_Greeter_SayHello = new grpc.web.AbstractClientBase.MethodInfo(
   function(request) {
     return request.serializeBinary();
   },
-  proto.helloworld.HelloReply.deserializeBinary
+  proto.helloworld.HelloReply.deserializeBinary,
 );
-
 
 /**
  * @param {!proto.helloworld.HelloRequest} request The
@@ -112,16 +106,15 @@ const methodInfo_Greeter_SayHello = new grpc.web.AbstractClientBase.MethodInfo(
  * @return {!grpc.web.ClientReadableStream<!proto.helloworld.HelloReply>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.helloworld.GreeterClient.prototype.sayHello =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/helloworld.Greeter/SayHello',
-      request,
-      metadata || {},
-      methodInfo_Greeter_SayHello,
-      callback);
+proto.helloworld.GreeterClient.prototype.sayHello = function(request, metadata, callback) {
+  return this.client_.rpcCall(
+    this.hostname_ + '/helloworld.Greeter/SayHello',
+    request,
+    metadata || {},
+    methodInfo_Greeter_SayHello,
+    callback,
+  );
 };
-
 
 /**
  * @param {!proto.helloworld.HelloRequest} request The
@@ -131,15 +124,13 @@ proto.helloworld.GreeterClient.prototype.sayHello =
  * @return {!Promise<!proto.helloworld.HelloReply>}
  *     A native promise that resolves to the response
  */
-proto.helloworld.GreeterPromiseClient.prototype.sayHello =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/helloworld.Greeter/SayHello',
-      request,
-      metadata || {},
-      methodInfo_Greeter_SayHello);
+proto.helloworld.GreeterPromiseClient.prototype.sayHello = function(request, metadata) {
+  return this.client_.unaryCall(
+    this.hostname_ + '/helloworld.Greeter/SayHello',
+    request,
+    metadata || {},
+    methodInfo_Greeter_SayHello,
+  );
 };
 
-
 module.exports = proto.helloworld;
-

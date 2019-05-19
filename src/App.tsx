@@ -1,14 +1,14 @@
 import React, { useState, useContext, useEffect } from 'react';
 
-import { useGrpc } from './useGrpcHook';
-import { HelloRequest } from './helloworld_pb';
+import { useGrpc } from './useGrpc';
+import { HelloRequest, HelloReply } from './helloworld_pb';
 import { ClientContext } from './index';
 
-const App = () => {
+const App: React.FC = () => {
   const [input, setInput] = useState('world!!!!!!!!!!');
   const client = useContext(ClientContext); // Pull client from context
 
-  const newHelloRequest = async ({ name }) => {
+  const newHelloRequest = async (name: string): Promise<HelloReply> => {
     const request = new HelloRequest();
     request.setName(name);
 
@@ -20,17 +20,21 @@ const App = () => {
 
   const [data, error, loading, makeRequest] = useGrpc(null);
 
-  const fetchDates = () => makeRequest(newHelloRequest, { name: 'World!' });
+  const fetchDates = () => makeRequest<HelloReply>(newHelloRequest, 'World!', null);
 
   useEffect(() => {
     fetchDates();
   }, []);
 
   const handleClick = () =>
-    makeRequest(newHelloRequest, { name: input }, data => {
-      data.message = 'Hello ' + input;
-      return data;
-    });
+    makeRequest<HelloReply>(
+      newHelloRequest,
+      input,
+      (data: HelloReply.AsObject): HelloReply.AsObject => {
+        data.message = 'Hello ' + input;
+        return data;
+      },
+    );
 
   if (error) {
     return (

@@ -21,3 +21,12 @@ To download required node_modules
 ### `npm start`
 
 To start the ReactJS client
+
+### `Regenerate protobuf`
+
+https://github.com/grpc/grpc-web/issues/447
+https://github.com/grpc/grpc-web/issues/484
+
+protoc -I=. helloworld.proto \
+ --js_out=import_style=commonjs:. \
+ --grpc-web_out=import_style=commonjs+dts,mode=grpcwebtext:.
