@@ -5,15 +5,17 @@ import * as jspb from 'google-protobuf';
 // const call = client.sayHello(request, {}, () => {});
 // call.on('data', data => console.log(data.toObject()));
 
-type GrpcRequestFn<T extends jspb.Message> = (name: string) => Promise<T>;
+type GrpcRequestFn<T> = (name: string) => Promise<T>;
 
-type MakeRequestFn = <T extends jspb.Message>(
+type OptimisticResponseFn<U> = (data: U) => U;
+
+type MakeRequestFn<T> = (
   request: GrpcRequestFn<T>,
   variables: any,
   optimistic: any,
 ) => Promise<void>;
 
-export function useGrpc(initialData: any): [any, any, any, MakeRequestFn] {
+export function useGrpc<T extends jspb.Message>(initialData: any): [T, any, any, MakeRequestFn<T>] {
   const [state, dispatch] = useReducer(requestReducer, {
     isLoading: true,
     isError: false,
@@ -21,13 +23,10 @@ export function useGrpc(initialData: any): [any, any, any, MakeRequestFn] {
   });
   const mounted = useRef(true);
 
-  // const call = client.sayHello(request, {}, () => {});
-  // call.on('data', data => console.log(data.toObject()));
-
-  async function makeRequest<T extends jspb.Message>(
+  async function makeRequest(
     request: GrpcRequestFn<T>,
     variables: any,
-    optimistic: any,
+    optimistic: OptimisticResponseFn<T>,
   ): Promise<void> {
     if (!optimistic) {
       dispatch({ type: 'REQUEST_START' });
@@ -37,8 +36,9 @@ export function useGrpc(initialData: any): [any, any, any, MakeRequestFn] {
 
     try {
       const response = await request(variables);
+      console.log(response.toObject());
       if (!mounted.current) return;
-      dispatch({ type: 'REQUEST_SUCCESS', payload: response.toObject() });
+      dispatch({ type: 'REQUEST_SUCCESS', payload: response });
     } catch (error) {
       if (!mounted.current) return;
       if (!optimistic) {

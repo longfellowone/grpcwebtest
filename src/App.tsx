@@ -12,22 +12,19 @@ const App: React.FC = () => {
     const request = new HelloRequest();
     request.setName(name);
 
-    // const call = client.sayHello(request, {}, () => {});
-    // call.on('data', data => console.log(data.toObject()));
-
     return await client.sayHello(request, {});
   };
 
-  const [data, error, loading, makeRequest] = useGrpc(null);
+  const [data, error, loading, makeRequest] = useGrpc<HelloReply>(null);
 
-  const fetchDates = () => makeRequest<HelloReply>(newHelloRequest, 'World!', null);
+  const fetchDates = () => makeRequest(newHelloRequest, 'World!', null);
 
   useEffect(() => {
     fetchDates();
   }, []);
 
   const handleClick = () =>
-    makeRequest<HelloReply>(
+    makeRequest(
       newHelloRequest,
       input,
       (data: HelloReply.AsObject): HelloReply.AsObject => {
@@ -47,7 +44,7 @@ const App: React.FC = () => {
 
   return (
     <div>
-      <div>{loading ? <div>loading...</div> : data.message}</div>
+      <div>{loading ? <div>loading...</div> : data.getMessage()}</div>
       <input value={input} onChange={e => setInput(e.target.value)} />
       <button onClick={handleClick}>New Request</button>
     </div>
